@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "763004169944",
+    "project_id": "bemark-fecaf",
+    "storage_bucket": "bemark-fecaf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:763004169944:android:e4be78fbd436237cd1b1ad",
+        "android_client_info": {
+          "package_name": "com.neworesearchgroup.bemarkalarm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVPyXVpxKwW0T14OBkqQ-84maHmfK443A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
