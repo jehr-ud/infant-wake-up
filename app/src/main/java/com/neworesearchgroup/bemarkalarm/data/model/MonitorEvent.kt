@@ -10,8 +10,8 @@ data class MonitorEvent(
 
     val timestamp: Long = System.currentTimeMillis(),
 
-    val score: Float,           // score acústico
-    val decisionValue: Float,   // EMA o valor final
+    val score: Float,           // score acoustic
+    val decisionValue: Float,   // EMA o final value
 
     val wasConfirmed: Boolean?  // null = sin feedback
 )

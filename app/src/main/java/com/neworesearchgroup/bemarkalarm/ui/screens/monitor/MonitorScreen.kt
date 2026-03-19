@@ -1,4 +1,4 @@
-package com.neworesearchgroup.bemarkalarm.ui.screens
+package com.neworesearchgroup.bemarkalarm.ui.screens.monitor
 
 import android.Manifest
 import android.content.Context

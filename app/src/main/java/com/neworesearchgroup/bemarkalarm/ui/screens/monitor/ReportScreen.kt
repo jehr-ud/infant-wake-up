@@ -1,4 +1,4 @@
-package com.neworesearchgroup.bemarkalarm.ui.screens
+package com.neworesearchgroup.bemarkalarm.ui.screens.monitor
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize

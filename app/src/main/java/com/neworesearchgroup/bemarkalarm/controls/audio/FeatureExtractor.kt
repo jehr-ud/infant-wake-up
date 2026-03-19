@@ -1,8 +1,10 @@
 package com.neworesearchgroup.bemarkalarm.controls.audio
 
+import com.neworesearchgroup.bemarkalarm.data.model.AudioFeatures
+
 class FeatureExtractor {
 
-    // Mide intensidad sostenida, no picos aislados.
+    // Sustained medium intensity, without isolated peaks.
     fun computeEnergy(samples: ShortArray): Float {
         var sum = 0.0
         for (s in samples) {
@@ -14,7 +16,7 @@ class FeatureExtractor {
 
 
 
-    // Captura características de vocalización.
+    // Capture vocalization characteristics.
     fun computeZCR(samples: ShortArray): Float {
         var zeroCrossings = 0
         for (i in 1 until samples.size) {
@@ -53,10 +55,11 @@ class FeatureExtractor {
         }
     }
 
-    /*Usamos autocorrelación básica (suficiente para tu caso).
-    Parámetros clave
-    Bebés: 300–600 Hz
-    Adultos: < 300 Hz*/
+    /*
+    We use basic autocorrelation
+    Key parameters
+    Infants: 300–600 Hz
+    Adults: < 300 Hz*/
 
     fun normalizePitch(pitch: Float): Float {
         return when {
@@ -81,8 +84,3 @@ class FeatureExtractor {
     }
 }
 
-data class AudioFeatures(
-    val energy: Float,
-    val zcr: Float,
-    val pitch: Float
-)

@@ -6,6 +6,7 @@ import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import androidx.annotation.RequiresPermission
+import com.neworesearchgroup.bemarkalarm.data.model.AcousticModel
 
 class AudioWakeDetector(
     private val onWakeDetected: () -> Unit

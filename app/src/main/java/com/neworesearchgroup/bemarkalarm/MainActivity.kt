@@ -17,18 +17,18 @@ import com.neworesearchgroup.bemarkalarm.data.model.MonitorEvent
 import com.neworesearchgroup.bemarkalarm.data.viewmodel.LoginViewModel
 import com.neworesearchgroup.bemarkalarm.data.viewmodel.MonitorViewModel
 import com.neworesearchgroup.bemarkalarm.data.viewmodel.RegisterViewModel
-import com.neworesearchgroup.bemarkalarm.ui.screens.LoginScreen
-import com.neworesearchgroup.bemarkalarm.ui.screens.MonitorScreen
-import com.neworesearchgroup.bemarkalarm.ui.screens.RegisterScreen
-import com.neworesearchgroup.bemarkalarm.ui.screens.ReportScreen
+import com.neworesearchgroup.bemarkalarm.ui.screens.auth.LoginScreen
+import com.neworesearchgroup.bemarkalarm.ui.screens.monitor.MonitorScreen
+import com.neworesearchgroup.bemarkalarm.ui.screens.auth.RegisterScreen
+import com.neworesearchgroup.bemarkalarm.ui.screens.monitor.ReportScreen
 import com.neworesearchgroup.bemarkalarm.ui.theme.BemarkTheme
+import com.neworesearchgroup.bemarkalarm.data.enums.FlowScreenStatus
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Crear canal de notificaciones
         NotificationUtils.createChannel(this)
 
         setContent {
@@ -38,7 +38,6 @@ class MainActivity : ComponentActivity() {
                 val auth = FirebaseAuth.getInstance()
                 val context = LocalContext.current
 
-                // ✅ ÚNICA instancia de Room para toda la app
                 val database = remember {
                     Room.databaseBuilder(
                         context.applicationContext,
@@ -47,11 +46,10 @@ class MainActivity : ComponentActivity() {
                     ).build()
                 }
 
-                // Decide pantalla inicial
                 val startDestination = if (auth.currentUser != null) {
-                    "monitor"
+                    FlowScreenStatus.MONITOR.toString()
                 } else {
-                    "login"
+                    FlowScreenStatus.LOGIN.toString()
                 }
 
                 NavHost(
@@ -59,25 +57,23 @@ class MainActivity : ComponentActivity() {
                     startDestination = startDestination
                 ) {
 
-                    // ---------- LOGIN ----------
-                    composable("login") {
+                    composable(FlowScreenStatus.LOGIN.toString()) {
                         val viewModel: LoginViewModel = viewModel()
 
                         LoginScreen(
                             viewModel = viewModel,
                             onLoginSuccess = {
-                                navController.navigate("monitor") {
-                                    popUpTo("login") { inclusive = true }
+                                navController.navigate(FlowScreenStatus.MONITOR.toString()) {
+                                    popUpTo(FlowScreenStatus.LOGIN.toString()) { inclusive = true }
                                 }
                             },
                             onGoToRegister = {
-                                navController.navigate("register")
+                                navController.navigate(FlowScreenStatus.REGISTER.toString())
                             }
                         )
                     }
 
-                    // ---------- MONITOR ----------
-                    composable("monitor") {
+                    composable(FlowScreenStatus.MONITOR.toString()) {
 
                         val monitorViewModel = remember {
                             MonitorViewModel(database.monitorEventDao())
@@ -86,16 +82,13 @@ class MainActivity : ComponentActivity() {
                         MonitorScreen(
                             viewModel = monitorViewModel,
                             onAlert = { score, decisionValue ->
-                                // ✅ Guardar SOLO cuando hay alerta
                                 monitorViewModel.saveAlert(score, decisionValue)
-
-                                navController.navigate("report")
+                                navController.navigate(FlowScreenStatus.REPORT.toString())
                             }
                         )
                     }
 
-                    // ---------- REPORT ----------
-                    composable("report") {
+                    composable(FlowScreenStatus.REPORT.toString()) {
 
                         val dao = database.monitorEventDao()
                         var events by remember { mutableStateOf<List<MonitorEvent>>(emptyList()) }
@@ -107,26 +100,25 @@ class MainActivity : ComponentActivity() {
                         ReportScreen(
                             events = events,
                             onContinue = {
-                                navController.navigate("monitor") {
-                                    popUpTo("report") { inclusive = true }
+                                navController.navigate(FlowScreenStatus.MONITOR.toString()) {
+                                    popUpTo(FlowScreenStatus.REPORT.toString()) { inclusive = true }
                                 }
                             }
                         )
                     }
 
-                    // ---------- REGISTER ----------
-                    composable("register") {
+                    composable(FlowScreenStatus.REGISTER.toString()) {
                         val viewModel: RegisterViewModel = viewModel()
 
                         RegisterScreen(
                             viewModel = viewModel,
                             onRegisterSuccess = {
-                                navController.navigate("monitor") {
-                                    popUpTo("register") { inclusive = true }
+                                navController.navigate(FlowScreenStatus.MONITOR.toString()) {
+                                    popUpTo(FlowScreenStatus.REGISTER.toString()) { inclusive = true }
                                 }
                             },
                             onGoToLogin = {
-                                navController.navigate("login")
+                                navController.navigate(FlowScreenStatus.LOGIN.toString())
                             }
                         )
                     }

@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.math.sqrt
 
 /* -----------------------------------------------------
-   UTILIDADES
+   Utils
 ----------------------------------------------------- */
 
 @RequiresPermission(Manifest.permission.VIBRATE)
@@ -148,6 +148,7 @@ class AudioMonitorService : Service() {
        AUDIO
     ----------------------------------------------------- */
 
+    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     private fun initRecorder() {
         if (audioRecord != null) return
 

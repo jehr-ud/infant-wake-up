@@ -1,12 +1,8 @@
 package com.neworesearchgroup.bemarkalarm.data.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
-import com.neworesearchgroup.bemarkalarm.controls.audio.AudioWakeDetector
 import com.neworesearchgroup.bemarkalarm.data.dao.MonitorEventDao
 import com.neworesearchgroup.bemarkalarm.data.model.MonitorEvent
 import kotlinx.coroutines.launch
