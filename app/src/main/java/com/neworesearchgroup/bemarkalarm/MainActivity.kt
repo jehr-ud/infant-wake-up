@@ -23,6 +23,10 @@ import com.neworesearchgroup.bemarkalarm.ui.screens.auth.RegisterScreen
 import com.neworesearchgroup.bemarkalarm.ui.screens.monitor.ReportScreen
 import com.neworesearchgroup.bemarkalarm.ui.theme.BemarkTheme
 import com.neworesearchgroup.bemarkalarm.data.enums.FlowScreenStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
 
@@ -108,6 +112,10 @@ class MainActivity : ComponentActivity() {
                             mutableStateOf<List<MonitorEvent>>(emptyList())
                         }
 
+                        val monitorViewModel = remember {
+                            MonitorViewModel(database.monitorEventDao())
+                        }
+
                         LaunchedEffect(Unit) {
                             events = dao.getAll()
                         }
@@ -121,9 +129,36 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             },
+                            onClear = {
+                                monitorViewModel.clearEvents()
+                                navController.navigate(FlowScreenStatus.MONITOR.route) {
+                                    popUpTo(FlowScreenStatus.REPORT.route) {
+                                        inclusive = true
+                                    }
+                                }
+                            },
+
                             onLogout = {
                                 FirebaseAuth.getInstance().signOut()
                                 navController.navigate(FlowScreenStatus.LOGIN.route)
+                            },
+                            onCorrectAlert = { event ->
+                                monitorViewModel.correctFeedback(event)
+
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    events = dao.getAll()
+                                }
+                            },
+                            onFalseAlert = { event ->
+                                monitorViewModel.falseFeedback(event)
+
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    val updated = dao.getAll()
+
+                                    withContext(Dispatchers.Main) {
+                                        events = updated
+                                    }
+                                }
                             }
                         )
                     }

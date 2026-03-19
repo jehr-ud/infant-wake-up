@@ -12,12 +12,17 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.util.Log
-import androidx.annotation.RequiresApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.room.Room
 import com.neworesearchgroup.bemarkalarm.R
+import com.neworesearchgroup.bemarkalarm.data.database.BemarkDatabase
+import com.neworesearchgroup.bemarkalarm.data.model.MonitorEvent
 import com.neworesearchgroup.bemarkalarm.ui.utils.AlarmPlayer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlin.math.sqrt
@@ -82,6 +87,7 @@ fun showAlarmNotification(context: Context) {
 
 class AudioMonitorService : Service() {
 
+    private lateinit var database: BemarkDatabase
     companion object {
         private const val CHANNEL_ID = "audio_monitor_channel"
         private const val NOTIF_ID = 101
@@ -136,6 +142,25 @@ class AudioMonitorService : Service() {
         return START_STICKY
     }
 
+    private fun saveEvent(score: Float, decisionValue: Float) {
+
+        database = Room.databaseBuilder(
+            applicationContext,
+            BemarkDatabase::class.java,
+            "bemark_db"
+        ).build()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            database.monitorEventDao().insert(
+                MonitorEvent(
+                    score = score,
+                    decisionValue = decisionValue,
+                    wasConfirmed = null
+                )
+            )
+        }
+    }
+
     override fun onDestroy() {
         stopAlarm()
         stopListening()
@@ -185,13 +210,26 @@ class AudioMonitorService : Service() {
 
                 Log.d("AudioMonitor", "RMS=$rms ZCR=$zcr")
 
+                val score = calculateScore(rms, zcr)
+
                 if (detectCry(rms, zcr)) {
                     Log.d("AudioMonitor", "👶 CRY DETECTED")
-                    onWakeDetected()
+                    onWakeDetected(
+                        score = score,
+                        decisionValue = score
+                    )
                     resetCryDetection()
                 }
             }
         }.apply { start() }
+    }
+
+    private fun calculateScore(rms: Double, zcr: Double): Float {
+
+        val rmsNorm = (rms / 1000.0).coerceIn(0.0, 1.0)
+        val zcrNorm = zcr.coerceIn(0.0, 1.0)
+
+        return (0.7 * rmsNorm + 0.3 * zcrNorm).toFloat()
     }
 
     private fun stopListening() {
@@ -256,9 +294,14 @@ class AudioMonitorService : Service() {
     ----------------------------------------------------- */
 
     @RequiresPermission(Manifest.permission.VIBRATE)
-    private fun onWakeDetected() {
-        if (alarmActive) return
+    private fun onWakeDetected(score: Float, decisionValue: Float) {
+        if (alarmActive) {
+            return
+        }
+
         alarmActive = true
+
+        saveEvent(score, decisionValue)
 
         alarmPlayer.play()
         vibrate(this)

@@ -15,21 +15,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import com.neworesearchgroup.bemarkalarm.controls.audio.AudioMonitorService
 import com.neworesearchgroup.bemarkalarm.data.viewmodel.MonitorViewModel
 import com.neworesearchgroup.bemarkalarm.ui.components.AppMenu
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.OutlinedButton
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,8 +56,6 @@ fun MonitorScreen(
 
     val isListening by AudioMonitorService.isListening.collectAsState()
 
-    var expanded by remember { mutableStateOf(false) }
-
     Scaffold(
         topBar = {
             AppMenu(
@@ -78,17 +74,68 @@ fun MonitorScreen(
             verticalArrangement = Arrangement.Center
         ) {
 
-            Text(
-                text = if (isListening)
-                    "Monitoring active"
-                else
-                    "Monitoring stopped",
-                fontSize = 22.sp
-            )
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp)
+                ) {
+                    Text(
+                        text = "System status",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    Text(
+                        text = if (isListening)
+                            "Monitoring active"
+                        else
+                            "Monitoring stopped",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(20.dp))
+
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp)
+                ) {
+                    Text(
+                        text = "Audio state",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    Text(
+                        text = if (isListening)
+                            "🎤 Listening..."
+                        else
+                            "⛔ Not listening",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
 
             Spacer(Modifier.height(24.dp))
 
             Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                ),
                 onClick = {
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -114,36 +161,29 @@ fun MonitorScreen(
                             Manifest.permission.RECORD_AUDIO
                         )
                     }
-                }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Start Monitoring")
             }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(12.dp))
 
-            Text(
-                text = if (isListening)
-                    "🎤 Listening..."
-                else
-                    "⛔ Not listening",
-                fontSize = 18.sp
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            Button(
+            OutlinedButton(
                 onClick = {
                     context.stopService(
                         Intent(context, AudioMonitorService::class.java)
                     )
-                }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text("Stop Monitoring")
             }
         }
     }
 }
-
 private fun startAudioService(context: Context) {
     val intent = Intent(context, AudioMonitorService::class.java)
     ContextCompat.startForegroundService(context, intent)

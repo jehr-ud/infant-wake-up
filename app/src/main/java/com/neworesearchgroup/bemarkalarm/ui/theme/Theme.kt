@@ -6,8 +6,14 @@ import androidx.compose.ui.graphics.Color
 
 private val BemarkColorScheme = lightColorScheme(
 
-    primary = BemarkBlue,
+    primary = BemarkPrimary,
     onPrimary = Color.White,
+
+    primaryContainer = BemarkPrimaryLight,
+    onPrimaryContainer = Color.White,
+
+    secondary = BemarkTextSecondary,
+    onSecondary = Color.White,
 
     background = BemarkBackground,
     onBackground = BemarkTextPrimary,
@@ -15,8 +21,13 @@ private val BemarkColorScheme = lightColorScheme(
     surface = BemarkSurface,
     onSurface = BemarkTextPrimary,
 
+    surfaceVariant = BemarkSurfaceVariant,
+    onSurfaceVariant = BemarkTextSecondary,
+
     error = BemarkDanger,
-    onError = Color.White
+    onError = Color.White,
+
+    outline = BemarkBorder
 )
 
 @Composable

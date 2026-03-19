@@ -1,17 +1,13 @@
 package com.neworesearchgroup.bemarkalarm.ui.screens.monitor
 
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import com.neworesearchgroup.bemarkalarm.data.model.MonitorEvent
 import com.neworesearchgroup.bemarkalarm.ui.components.AppMenu
 
@@ -19,7 +15,10 @@ import com.neworesearchgroup.bemarkalarm.ui.components.AppMenu
 fun ReportScreen(
     events: List<MonitorEvent>,
     onContinue: () -> Unit,
-    onLogout: () -> Unit
+    onClear: () -> Unit,
+    onLogout: () -> Unit,
+    onCorrectAlert: (MonitorEvent) -> Unit,
+    onFalseAlert: (MonitorEvent) -> Unit
 ) {
 
     Scaffold(
@@ -41,26 +40,117 @@ fun ReportScreen(
 
             Text(
                 text = "Monitoring Report",
-                fontSize = 24.sp
+                style = MaterialTheme.typography.headlineLarge
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(20.dp))
 
-            events.forEach { event ->
-                Text(
-                    text = "• Score: ${event.score} | Decision: ${event.decisionValue}",
-                    fontSize = 16.sp
-                )
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(events) { event ->
 
-                Spacer(Modifier.height(8.dp))
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+
+                            Text(
+                                text = "Score: ${event.score}",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                            Spacer(Modifier.height(6.dp))
+
+                            Text(
+                                text = "Decision: ${event.decisionValue}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+
+                            Spacer(Modifier.height(12.dp))
+
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+
+
+                                if (event.wasConfirmed == null) {
+
+                                    Button(
+                                        onClick = {
+                                            onCorrectAlert(event)
+                                        }
+                                    ) {
+                                        Text("Correct")
+                                    }
+
+                                    Button(
+                                        onClick = {
+                                            onFalseAlert(event)
+                                        }
+                                    ) {
+                                        Text("False alert")
+                                    }
+
+                                } else if (event.wasConfirmed == true) {
+
+                                    Button(
+                                        onClick = {},
+                                        enabled = false
+                                    ) {
+                                        Text("Correct ✓")
+                                    }
+
+                                    OutlinedButton(
+                                        onClick = {},
+                                        enabled = false
+                                    ) {
+                                        Text("False alert")
+                                    }
+
+                                } else {
+
+                                    OutlinedButton(
+                                        onClick = {},
+                                        enabled = false
+                                    ) {
+                                        Text("Correct")
+                                    }
+
+                                    Button(
+                                        onClick = {},
+                                        enabled = false
+                                    ) {
+                                        Text("False alert ✓")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(20.dp))
 
             Button(
-                onClick = onContinue
+                onClick = onContinue,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Continue monitoring")
+            }
+
+            OutlinedButton(
+                onClick = onClear,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Clear alerts")
             }
         }
     }

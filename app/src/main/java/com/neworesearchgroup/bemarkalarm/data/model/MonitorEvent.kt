@@ -5,13 +5,13 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "monitor_events")
 data class MonitorEvent(
+
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
 
-    val timestamp: Long = System.currentTimeMillis(),
+    val score: Float,
+    val decisionValue: Float,
+    val wasConfirmed: Boolean?,
 
-    val score: Float,           // score acoustic
-    val decisionValue: Float,   // EMA o final value
-
-    val wasConfirmed: Boolean?  // null = sin feedback
+    val timestamp: Long = System.currentTimeMillis()
 )
