@@ -45,6 +45,13 @@ fun ReportScreen(
 
             Spacer(Modifier.height(20.dp))
 
+            Text(
+                text = "Total alerts: ${events.size}",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Spacer(Modifier.height(20.dp))
+
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
