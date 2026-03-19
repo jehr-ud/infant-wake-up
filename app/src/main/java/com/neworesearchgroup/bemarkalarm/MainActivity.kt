@@ -120,6 +120,10 @@ class MainActivity : ComponentActivity() {
                                         inclusive = true
                                     }
                                 }
+                            },
+                            onLogout = {
+                                FirebaseAuth.getInstance().signOut()
+                                navController.navigate(FlowScreenStatus.LOGIN.route)
                             }
                         )
                     }

@@ -10,32 +10,58 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import com.neworesearchgroup.bemarkalarm.data.model.MonitorEvent
+import com.neworesearchgroup.bemarkalarm.ui.components.AppMenu
 
 @Composable
 fun ReportScreen(
     events: List<MonitorEvent>,
-    onContinue: () -> Unit
+    onContinue: () -> Unit,
+    onLogout: () -> Unit
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp)
-    ) {
-        Text("Monitoring Report", fontSize = 24.sp)
 
-        Spacer(Modifier.height(16.dp))
-
-        events.forEach {
-            Text(
-                "• ${it.score} - ${it.decisionValue}",
-                fontSize = 16.sp
+    Scaffold(
+        topBar = {
+            AppMenu(
+                title = "Reports",
+                onGoToReport = { },
+                onLogout = onLogout
             )
         }
+    ) { padding ->
 
-        Spacer(Modifier.height(24.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(24.dp)
+        ) {
 
-        Button(onClick = onContinue) {
-            Text("Continue monitoring")
+            Text(
+                text = "Monitoring Report",
+                fontSize = 24.sp
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            events.forEach { event ->
+                Text(
+                    text = "• Score: ${event.score} | Decision: ${event.decisionValue}",
+                    fontSize = 16.sp
+                )
+
+                Spacer(Modifier.height(8.dp))
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            Button(
+                onClick = onContinue
+            ) {
+                Text("Continue monitoring")
+            }
         }
     }
 }

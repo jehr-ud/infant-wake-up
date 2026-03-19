@@ -8,40 +8,39 @@ import androidx.compose.runtime.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppMenu(
-    onMonitor: () -> Unit,
-    onReport: () -> Unit,
+    title: String,
+    onGoToReport: () -> Unit,
     onLogout: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     TopAppBar(
         title = {
-            Text("Infant Monitor")
+            Text(title)
         },
         actions = {
             IconButton(
-                onClick = { expanded = true }
+                onClick = {
+                    expanded = true
+                }
             ) {
-                Icon(Icons.Default.MoreVert, contentDescription = "Menu")
+                Icon(
+                    Icons.Default.MoreVert,
+                    contentDescription = "Menu"
+                )
             }
 
             DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = {
+                    expanded = false
+                }
             ) {
-                DropdownMenuItem(
-                    text = { Text("Monitor") },
-                    onClick = {
-                        expanded = false
-                        onMonitor()
-                    }
-                )
-
                 DropdownMenuItem(
                     text = { Text("Reports") },
                     onClick = {
                         expanded = false
-                        onReport()
+                        onGoToReport()
                     }
                 )
 

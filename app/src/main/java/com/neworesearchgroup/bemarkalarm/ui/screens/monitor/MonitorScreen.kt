@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import com.neworesearchgroup.bemarkalarm.controls.audio.AudioMonitorService
 import com.neworesearchgroup.bemarkalarm.data.viewmodel.MonitorViewModel
+import com.neworesearchgroup.bemarkalarm.ui.components.AppMenu
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,43 +62,10 @@ fun MonitorScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text("Infant Monitor")
-                },
-                actions = {
-                    IconButton(
-                        onClick = { expanded = true }
-                    ) {
-                        Icon(
-                            Icons.Default.MoreVert,
-                            contentDescription = "Menu"
-                        )
-                    }
-
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = {
-                            expanded = false
-                        }
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text("Reports") },
-                            onClick = {
-                                expanded = false
-                                onGoToReport()
-                            }
-                        )
-
-                        DropdownMenuItem(
-                            text = { Text("Logout") },
-                            onClick = {
-                                expanded = false
-                                onLogout()
-                            }
-                        )
-                    }
-                }
+            AppMenu(
+                title = "Infant Monitor",
+                onGoToReport = onGoToReport,
+                onLogout = onLogout
             )
         }
     ) { padding ->
