@@ -47,9 +47,9 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val startDestination = if (auth.currentUser != null) {
-                    FlowScreenStatus.MONITOR.toString()
+                    FlowScreenStatus.MONITOR.route
                 } else {
-                    FlowScreenStatus.LOGIN.toString()
+                    FlowScreenStatus.LOGIN.route
                 }
 
                 NavHost(
@@ -57,23 +57,25 @@ class MainActivity : ComponentActivity() {
                     startDestination = startDestination
                 ) {
 
-                    composable(FlowScreenStatus.LOGIN.toString()) {
+                    composable(FlowScreenStatus.LOGIN.route) {
                         val viewModel: LoginViewModel = viewModel()
 
                         LoginScreen(
                             viewModel = viewModel,
                             onLoginSuccess = {
-                                navController.navigate(FlowScreenStatus.MONITOR.toString()) {
-                                    popUpTo(FlowScreenStatus.LOGIN.toString()) { inclusive = true }
+                                navController.navigate(FlowScreenStatus.MONITOR.route) {
+                                    popUpTo(FlowScreenStatus.LOGIN.route) {
+                                        inclusive = true
+                                    }
                                 }
                             },
                             onGoToRegister = {
-                                navController.navigate(FlowScreenStatus.REGISTER.toString())
+                                navController.navigate(FlowScreenStatus.REGISTER.route)
                             }
                         )
                     }
 
-                    composable(FlowScreenStatus.MONITOR.toString()) {
+                    composable(FlowScreenStatus.MONITOR.route) {
 
                         val monitorViewModel = remember {
                             MonitorViewModel(database.monitorEventDao())
@@ -83,15 +85,28 @@ class MainActivity : ComponentActivity() {
                             viewModel = monitorViewModel,
                             onAlert = { score, decisionValue ->
                                 monitorViewModel.saveAlert(score, decisionValue)
-                                navController.navigate(FlowScreenStatus.REPORT.toString())
+                                navController.navigate(FlowScreenStatus.REPORT.route)
+                            },
+                            onGoToReport = {
+                                navController.navigate(FlowScreenStatus.REPORT.route)
+                            },
+                            onLogout = {
+                                FirebaseAuth.getInstance().signOut()
+                                navController.navigate(FlowScreenStatus.LOGIN.route) {
+                                    popUpTo(FlowScreenStatus.MONITOR.route) {
+                                        inclusive = true
+                                    }
+                                }
                             }
                         )
                     }
 
-                    composable(FlowScreenStatus.REPORT.toString()) {
+                    composable(FlowScreenStatus.REPORT.route) {
 
                         val dao = database.monitorEventDao()
-                        var events by remember { mutableStateOf<List<MonitorEvent>>(emptyList()) }
+                        var events by remember {
+                            mutableStateOf<List<MonitorEvent>>(emptyList())
+                        }
 
                         LaunchedEffect(Unit) {
                             events = dao.getAll()
@@ -100,25 +115,29 @@ class MainActivity : ComponentActivity() {
                         ReportScreen(
                             events = events,
                             onContinue = {
-                                navController.navigate(FlowScreenStatus.MONITOR.toString()) {
-                                    popUpTo(FlowScreenStatus.REPORT.toString()) { inclusive = true }
+                                navController.navigate(FlowScreenStatus.MONITOR.route) {
+                                    popUpTo(FlowScreenStatus.REPORT.route) {
+                                        inclusive = true
+                                    }
                                 }
                             }
                         )
                     }
 
-                    composable(FlowScreenStatus.REGISTER.toString()) {
+                    composable(FlowScreenStatus.REGISTER.route) {
                         val viewModel: RegisterViewModel = viewModel()
 
                         RegisterScreen(
                             viewModel = viewModel,
                             onRegisterSuccess = {
-                                navController.navigate(FlowScreenStatus.MONITOR.toString()) {
-                                    popUpTo(FlowScreenStatus.REGISTER.toString()) { inclusive = true }
+                                navController.navigate(FlowScreenStatus.MONITOR.route) {
+                                    popUpTo(FlowScreenStatus.REGISTER.route) {
+                                        inclusive = true
+                                    }
                                 }
                             },
                             onGoToLogin = {
-                                navController.navigate(FlowScreenStatus.LOGIN.toString())
+                                navController.navigate(FlowScreenStatus.LOGIN.route)
                             }
                         )
                     }
