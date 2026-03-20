@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.neworesearchgroup.bemarkalarm.data.model.MonitorEvent
 import com.neworesearchgroup.bemarkalarm.ui.components.AppMenu
+import com.neworesearchgroup.bemarkalarm.utils.DateUtils
 
 @Composable
 fun ReportScreen(
@@ -68,6 +69,12 @@ fun ReportScreen(
                         Column(
                             modifier = Modifier.padding(16.dp)
                         ) {
+                            Text(
+                                text = "Time: ${DateUtils.formatDateTime(event.timestamp)}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+
+                            Spacer(Modifier.height(4.dp))
 
                             Text(
                                 text = "Score: ${event.score}",
